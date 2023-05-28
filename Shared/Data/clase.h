@@ -67,9 +67,9 @@ class Bundle{
         void setPrice(double s) { price = s; }
 
         virtual std::ostream& afisare(std::ostream &os) const{
-            os << title << ";" << price << ";" << discount << ";" << games.size() << ";\n";
+            os << title << ";" << price << ";" << discount << ";" << games.size() << ";";
             for(auto i : games)
-                os << i << '\n';
+                os << i;
             return os;
         }
         friend std::ostream& operator<<(std::ostream &os, const Bundle &b) { return b.afisare(os); }
