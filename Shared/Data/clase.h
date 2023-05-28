@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <set>
+#include <list>
 #include <stdlib.h>
 #include <fstream>
 #include <assert.h>
