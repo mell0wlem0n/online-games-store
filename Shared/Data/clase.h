@@ -12,6 +12,16 @@ class Game{
         double size, price;
     public:
         Game(std::string t = "", std::string c = "", double s = 0, double p = 0) : title{t}, category{c}, size {s}, price{p} {}
+        Game(const Game &g) : title{g.title}, category{g.category}, size{g.size}, price{g.price} {}
+        Game& operator = (const Game &g){
+            if (this == &g)
+                return *this;
+            title = g.title;
+            category = g.category;
+            size = g.size;
+            price = g.price;
+            return *this;
+        }
 
         std::string getTitle() { return title; }
         std::string getCategory() { return category; }
@@ -32,6 +42,16 @@ class Bundle{
         double price;
     public:
         Bundle(int d = -1, std::string t = "-", std::vector<Game> g = {}, double p = -1) : discount{d}, title{t}, games{g}, price{p} {}
+        Bundle(const Bundle &b) : discount{b.discount}, title{b.title}, games{b.games}, price{b.price} {}
+        Bundle& operator = (const Bundle &b){
+            if (this == &b)
+                return *this;
+            discount = b.discount;
+            title = b.title;
+            games = b.games;
+            price = b.price;
+            return *this;
+        }
         
         int getDiscount() { return discount; }
         std::string getTitle() { return title; }
@@ -50,6 +70,14 @@ class Catalog{
         std::vector<Bundle> bundles;
     public:
         Catalog(std::vector<Game> g = {}, std::vector<Bundle> b = {}) : games{g}, bundles{b} {}
+        Catalog(const Catalog &c) : games{c.games}, bundles{c.bundles} {}
+        Catalog& operator = (const Catalog &c){
+            if (this == &c)
+                return *this;
+            games = c.games;
+            bundles = c.bundles;
+            return *this;
+        }
 
         std::vector<Game> getGames() { return games; }
         std::vector<Bundle> getBundles() { return bundles; }
@@ -64,6 +92,16 @@ class Console{
         std::vector<Game> games, gamesInstalled;
     public:
         Console(double s1 = -1, double s2 = -1, std::vector<Game> g1 = {}, std::vector<Game> g2 = {}) : storage{s1}, storageLeft{s2}, games{g1}, gamesInstalled{g2} {}
+        Console(const Console &c) : storage{c.storage}, storageLeft{c.storageLeft}, games{c.games}, gamesInstalled{c.gamesInstalled} {}
+        Console& operator = (const Console &c){
+            if (this == &c)
+                return *this;
+            storage = c.storage;
+            storageLeft = c.storageLeft;
+            games = c.games;
+            gamesInstalled = c.gamesInstalled;
+            return *this;
+        }
 
         double getStorage() { return storage; }
         double getStorageLeft() { return storageLeft; }
