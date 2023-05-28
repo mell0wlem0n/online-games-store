@@ -32,6 +32,9 @@ class Game{
         void setCategory(std::string &s) { category = s; }
         void setSize(double s) { size = s; }
         void setPrice(double s) { price = s; }
+
+        virtual std::ostream& afisare(std::ostream &os) const { os << title << ";" << category << ";" << size << ";" << price << ";"; return os; }
+        friend std::ostream& operator<<(std::ostream &os, const Game &g) { return g.afisare(os); }
 };
 
 class Bundle{
@@ -62,6 +65,14 @@ class Bundle{
         void setTitle(std::string &s) { title = s; }
         void setGames(std::vector<Game> &s) { games = s; }
         void setPrice(double s) { price = s; }
+
+        virtual std::ostream& afisare(std::ostream &os) const{
+            os << title << ";" << price << ";" << discount << ";" << games.size() << ";\n";
+            for(auto i : games)
+                os << i << '\n';
+            return os;
+        }
+        friend std::ostream& operator<<(std::ostream &os, const Bundle &b) { return b.afisare(os); }
 };
 
 class Catalog{
@@ -84,6 +95,17 @@ class Catalog{
 
         void setGames(std::vector<Game> &g) { games = g; }
         void setBundles(std::vector<Bundle> &b) { bundles = b; }
+
+        virtual std::ostream& afisare(std::ostream &os) const{
+            os << games.size() << ";\n";
+            for(auto i : games)
+                os << i << '\n';
+            os << bundles.size() << ";\n";
+            for(auto i : bundles)
+                os << i << '\n';
+            return os;
+        }
+        friend std::ostream& operator<<(std::ostream &os, const Catalog &c) { return c.afisare(os); }
 };
 
 class Console{
