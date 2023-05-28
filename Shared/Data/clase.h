@@ -11,7 +11,7 @@ class Game{
         std::string title, category;
         double size, price;
     public:
-        Game(std::string t = "-", std::string c = "-", double s = 0, double p = 0) : title{t}, category{c}, size {s}, price{p} {}
+        Game(std::string t = "", std::string c = "", double s = 0, double p = 0) : title{t}, category{c}, size {s}, price{p} {}
 
         std::string getTitle() { return title; }
         std::string getCategory() { return category; }
@@ -31,7 +31,7 @@ class Bundle{
         std::vector<Game> games;
         double price;
     public:
-        Bundle(int d = -1, std::string t = "-", std::vector<Game> g, double p = -1) : discount{d}, title{t}, games{g}, price{p} {}
+        Bundle(int d = -1, std::string t = "-", std::vector<Game> g = {}, double p = -1) : discount{d}, title{t}, games{g}, price{p} {}
         
         int getDiscount() { return discount; }
         std::string getTitle() { return title; }
@@ -49,7 +49,7 @@ class Catalog{
         std::vector<Game> games;
         std::vector<Bundle> bundles;
     public:
-        Catalog(std::vector<Game> g, std::vector<Bundle> b) : games{g}, bundles{b} {}
+        Catalog(std::vector<Game> g = {}, std::vector<Bundle> b = {}) : games{g}, bundles{b} {}
 
         std::vector<Game> getGames() { return games; }
         std::vector<Bundle> getBundles() { return bundles; }
@@ -63,7 +63,7 @@ class Console{
         double storage, storageLeft;
         std::vector<Game> games, gamesInstalled;
     public:
-        Console(double s1 = -1, double s2 = -1, std::vector<Game> g1, std::vector<Game> g2) : storage{s1}, storageLeft{s2}, games{g1}, gamesInstalled{g2} {}
+        Console(double s1 = -1, double s2 = -1, std::vector<Game> g1 = {}, std::vector<Game> g2 = {}) : storage{s1}, storageLeft{s2}, games{g1}, gamesInstalled{g2} {}
 
         double getStorage() { return storage; }
         double getStorageLeft() { return storageLeft; }
