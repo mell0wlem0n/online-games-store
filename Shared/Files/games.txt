@@ -1,2 +1,4 @@
-GTA V;Action;60;59.99;
-Minecraft;Sandbox;20;23;
+Dark Souls III;Souls-like;12;39.99;
+CS:GO;Shooter;110;19.99;
+Cities Skyline;City-building;180;59.99;
+Minecraft;Sandbox;23;12;
