@@ -6,6 +6,9 @@
 #include <fstream>
 #include <assert.h>
 
+#ifndef CLASE_H
+#define CLASE_H
+
 class Game{
     private:
         std::string title, category;
@@ -135,3 +138,5 @@ class Console{
         void setGames(std::vector<Game> &s) { games = s; }
         void setGamesInstalled(std::vector<Game> &s) { gamesInstalled = s; }
 };
+
+#endif
