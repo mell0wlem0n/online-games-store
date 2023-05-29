@@ -1,22 +1,47 @@
 #include "../Shared/Data/clase.h"
 
+std::string findGameOrBundleInFile(std::string, std::string);
+
 Game stringToGame(std::string);
 std::string gameToString(Game);
 Bundle stringToBundle(std::string);
 std::string bundleToString(Bundle);
+void deleteGameOrBundleFromFile(std::string, std::string);
 
 void writeGameToFile(Game);
-void deleteGameFromFile(std::string);
 
 std::vector<Game> createGameVector(std::vector<std::string>);
+Bundle createBundle(std::string, int, std::vector<Game>);
+void writeBundleToFile(Bundle);
+void addGameToBundle(std::string, std::string);
+void deleteGameFromBundle(std::string, std::string);
 
 
 int main(int argc, char const *argv[]){
-    std::string s = "Jocurile fericite;82.99;50;2;GTA V;Action;60;59.99;Minecraft;Sandbox;20;23;";
-    std::cout << stringToBundle(s);
-    std::cout << '\n' << bundleToString(stringToBundle(s));
+
 
     return 0;
+}
+
+
+// Auxiliary
+
+std::string findGameOrBundleInFile(std::string title, std::string gamesORbundles){
+    std::ifstream FileIn;
+    std::string line;
+
+    FileIn.open("../Shared/Files/" + gamesORbundles + ".txt");
+    if(FileIn.is_open()){
+        while(std::getline(FileIn, line)){
+            auto pos = line.find(";");
+            if(line.substr(0, pos) == title){
+                FileIn.close();
+                return line;
+            }
+        }
+        FileIn.close();
+    }
+    return "-";
 }
 
 Game stringToGame(std::string s){
@@ -112,60 +137,6 @@ std::string bundleToString(Bundle b){
     return bundle;
 }
 
-void writeGameToFile(Game g){
-    bool ok = true;
-    std::ifstream gamesFileIn;
-    gamesFileIn.open("../Shared/Files/games.txt");
-    if(gamesFileIn.is_open()){
-        std::string line;
-        while(std::getline(gamesFileIn, line)){
-            auto pos = line.find(";");
-            if(line.substr(0, pos) == g.getTitle()){
-                ok = false;
-                break;
-            }
-        }
-        gamesFileIn.close();
-    }
-
-    if(ok){
-        std::ofstream gamesFileOut;
-        gamesFileOut.open("../Shared/Files/games.txt", std::ios::app);
-        if(gamesFileOut.is_open()){
-            gamesFileOut << gameToString(g) << '\n';
-            gamesFileOut.close();
-        }
-    }
-}
-
-void deleteGameFromFile(std::string g){
-    std::list<std::string> jocuri;
-    int contorJocuri;
-
-    std::ifstream gamesFileIn;
-    gamesFileIn.open("../Shared/Files/games.txt");
-    if(gamesFileIn.is_open()){
-        std::string line;
-        while(std::getline(gamesFileIn, line)){
-            contorJocuri += 1;
-            auto pos = line.find(";");
-            if(line.substr(0, pos) != g)
-                jocuri.push_back(line);
-        }
-        gamesFileIn.close();
-    }
-
-    if(contorJocuri != jocuri.size()){
-        std::ofstream gamesFileOut;
-        gamesFileOut.open("../Shared/Files/games.txt");
-        if(gamesFileOut.is_open()){
-            for(auto i : jocuri)
-                gamesFileOut << i << '\n';
-            gamesFileOut.close();
-        }
-    }
-}
-
 std::vector<Game> createGameVector(std::vector<std::string> games){
     std::vector<Game> out;
 
@@ -184,4 +155,137 @@ std::vector<Game> createGameVector(std::vector<std::string> games){
         }
     }
     return out;
+}
+
+void deleteGameOrBundleFromFile(std::string title, std::string gameORbundle){
+    std::list<std::string> obiecte;
+    int contorObiecte;
+
+    std::ifstream fileIn;
+    fileIn.open("../Shared/Files/" + gameORbundle + ".txt");
+    if(fileIn.is_open()){
+        std::string line;
+        while(std::getline(fileIn, line)){
+            contorObiecte += 1;
+            auto pos = line.find(";");
+            if(line.substr(0, pos) != title)
+                obiecte.push_back(line);
+        }
+        fileIn.close();
+    }
+
+    if(contorObiecte != obiecte.size()){
+        if(gameORbundle == "games"){
+            std::ifstream bundlesFileIn;
+            bundlesFileIn.open("../Shared/Files/bundles.txt");
+            if(bundlesFileIn.is_open()){
+                std::vector<std::string> bundles;
+
+                std::string line;
+                while(std::getline(bundlesFileIn, line))
+                    bundles.push_back(line.substr(0, line.find(';')));
+                bundlesFileIn.close();
+
+                for(auto i : bundles){
+                    std::cout << i;
+                    deleteGameFromBundle(i, title);
+                }
+            }
+        }
+
+        std::ofstream fileOut;
+        fileOut.open("../Shared/Files/" + gameORbundle + ".txt");
+        if(fileOut.is_open()){
+            for(auto i : obiecte)
+                fileOut << i << '\n';
+            fileOut.close();
+        }
+    }
+}
+
+// Game
+
+void writeGameToFile(Game game){
+    if(findGameOrBundleInFile(game.getTitle(), "games") == "-"){
+        std::ofstream gamesFileOut;
+        gamesFileOut.open("../Shared/Files/games.txt", std::ios::app);
+        if(gamesFileOut.is_open()){
+            gamesFileOut << gameToString(game) << '\n';
+            gamesFileOut.close();
+        }
+    }
+}
+
+// Bundle
+
+Bundle createBundle(std::string title, int discount, std::vector<Game> games){
+    double sum = 0;
+    for(auto i : games)
+        sum += i.getPrice();
+    return Bundle(discount, title, games, sum);
+}
+
+void writeBundleToFile(Bundle bundle){
+    if(findGameOrBundleInFile(bundle.getTitle(), "bundles") == "-"){
+        std::ofstream bundlesFileOut;
+        bundlesFileOut.open("../Shared/Files/bundles.txt", std::ios::app);
+        if(bundlesFileOut.is_open()){
+            bundlesFileOut << bundleToString(bundle) << '\n';
+            bundlesFileOut.close();
+        }
+    }
+}
+
+void addGameToBundle(std::string bundleTitle, std::string gameTitle){
+    std::string game = findGameOrBundleInFile(gameTitle, "games");
+    std::string bundle = findGameOrBundleInFile(bundleTitle, "bundles");
+
+    if(game != "-" && bundle != "-"){
+        Bundle bundleObj = stringToBundle(bundle);
+        Game gameObj = stringToGame(game);
+
+        std::vector<Game> bundleObjGames = bundleObj.getGames();
+
+        bool ok = true;
+        for(auto i : bundleObjGames){
+            if(i.getTitle() == gameObj.getTitle()){
+                ok = false;
+                break;
+            }
+        }
+        if(ok){
+            bundleObjGames.push_back(gameObj);
+            bundleObj.setGames(bundleObjGames);
+            deleteGameOrBundleFromFile(bundleTitle, "bundles");
+            bundleObj.setPrice(bundleObj.getPrice() + gameObj.getPrice());
+            writeBundleToFile(bundleObj);
+        }
+    }
+}
+
+void deleteGameFromBundle(std::string bundleTitle, std::string gameTitle){
+    std::string game = findGameOrBundleInFile(gameTitle, "games");
+    std::string bundle = findGameOrBundleInFile(bundleTitle, "bundles");
+
+    if(game != "-" && bundle != "-"){
+        Bundle bundleObj = stringToBundle(bundle);
+        Game gameObj = stringToGame(game);
+
+        std::vector<Game> bundleObjGames = bundleObj.getGames();
+
+        bool ok = false;
+        for(auto i = bundleObjGames.begin(); i < bundleObjGames.end(); i++){
+            if((*i).getTitle() == gameObj.getTitle()){
+                bundleObjGames.erase(i);
+                ok = true;
+                break;
+            }
+        }
+        if(ok){
+            bundleObj.setGames(bundleObjGames);
+            deleteGameOrBundleFromFile(bundleTitle, "bundles");
+            bundleObj.setPrice(bundleObj.getPrice() - gameObj.getPrice());
+            writeBundleToFile(bundleObj);
+        }
+    }
 }
