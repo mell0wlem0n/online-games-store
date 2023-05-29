@@ -11,7 +11,7 @@ class Game{
         std::string title, category;
         double size, price;
     public:
-        Game(std::string t = "", std::string c = "", double s = 0, double p = 0) : title{t}, category{c}, size {s}, price{p} {}
+        Game(std::string t = "", std::string c = "", double s = -1, double p = -1) : title{t}, category{c}, size {s}, price{p} {}
         Game(const Game &g) : title{g.title}, category{g.category}, size{g.size}, price{g.price} {}
         Game& operator = (const Game &g){
             if (this == &g)
