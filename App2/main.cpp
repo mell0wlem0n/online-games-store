@@ -8,12 +8,9 @@ using namespace std;
 
 void modifica_joc(char **);
 void vizualizare_catalog();
-void cumparare_joc(char **);
+void cumpara_joc(char **);
 void instalare_joc(char);
 void dezinstalare_joc(char);
-void vizualizare_jocuri_cumparate();
-void vizualizare_jocuri_instalate();
-void vizualizare_memorie_consola();
 
 int main(int argc, char **argv)
 {
@@ -35,7 +32,7 @@ int main(int argc, char **argv)
     {
         if ((string)argv[1] == "buy_game")
         {
-            cumparare_joc(argv);
+            cumpara_joc(argv);
         }
     }
 
@@ -142,15 +139,13 @@ void modifica_joc(char **argv)
         fout.close();
     }
 }
-void cumparare_joc(char **argv)
+
+void cumpara_joc(char **argv)
 {
-
-    string test = findGameOrBundleInFile((string)argv[2], "games");
-    cout << test;
-    if (test != "-")
+    string find = findGameOrBundleInFile((string)argv[2], "games");
+    if (find != "-")
     {
-
-        Game joc = stringToGame(test);
+        Game joc = stringToGame(find);
         ifstream fin("../Shared/Files/consola.txt");
         if (fin.is_open())
         {
@@ -162,6 +157,11 @@ void cumparare_joc(char **argv)
             consola.setGames(jocuriCumparate);
             consola.setStorageLeft(consola.getStorageLeft() - joc.getSize());
             fin.close();
+            ofstream fout("../Shared/Files/consola.txt");
+            if (fout.is_open())
+            {
+                fout << consoleToString(consola);
+            }
         }
     }
 }
@@ -171,21 +171,5 @@ void instalare_joc(char titlu_joc)
 }
 
 void dezinstalare_joc(char titlu_joc)
-{
-}
-
-void vizualizare_jocuri_cumparate()
-{
-}
-
-void vizualizare_jocuri_instalate()
-{
-}
-
-void vizualizare_memorie_consola()
-{
-}
-
-void push_data()
 {
 }
