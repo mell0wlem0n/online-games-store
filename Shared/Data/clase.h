@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <assert.h>
+#include <algorithm>
 
 #ifndef CLASE_H
 #define CLASE_H
@@ -18,6 +19,7 @@ private:
 public:
     Game(std::string t = "", std::string c = "", double s = -1, double p = -1) : title{t}, category{c}, size{s}, price{p} {}
     Game(const Game &g) : title{g.title}, category{g.category}, size{g.size}, price{g.price} {}
+    friend bool operator<(const Game &g1, const Game &g2) { return g1.title < g2.title; }
     Game &operator=(const Game &g)
     {
         if (this == &g)
@@ -135,6 +137,7 @@ private:
 public:
     Console(double s = -1, std::vector<Game> g1 = {}, std::vector<Game> g2 = {}) : storageLeft{s}, gamesInstalled{g1}, games{g2} {}
     Console(const Console &c) : storageLeft{c.storageLeft}, games{c.games}, gamesInstalled{c.gamesInstalled} {}
+
     Console &operator=(const Console &c)
     {
         if (this == &c)

@@ -1,7 +1,6 @@
 #include "../Shared/Data/clase.h"
 #include "../Shared/Data/functii.h"
 #include <cstring>
-#include <algorithm>
 #include <set>
 
 using namespace std;
@@ -9,8 +8,9 @@ using namespace std;
 void modifica_joc(char **);
 void vizualizare_catalog();
 void cumpara_joc(char **);
-void instalare_joc(char);
-void dezinstalare_joc(char);
+void instalare_joc(char **);
+void dezinstalare_joc(char **);
+void cumpara_bundle(char **);
 
 int main(int argc, char **argv)
 {
@@ -33,6 +33,18 @@ int main(int argc, char **argv)
         if ((string)argv[1] == "buy_game")
         {
             cumpara_joc(argv);
+        }
+        if ((string)argv[1] == "install_game")
+        {
+            instalare_joc(argv);
+        }
+        if ((string)argv[1] == "uninstall_game")
+        {
+            dezinstalare_joc(argv);
+        }
+        if ((string)argv[1] == "buy_bundle")
+        {
+            cumpara_bundle(argv);
         }
     }
 
@@ -153,23 +165,166 @@ void cumpara_joc(char **argv)
             getline(fin, reader);
             Console consola = stringToConsole(reader);
             vector<Game> jocuriCumparate = consola.getGames();
-            jocuriCumparate.push_back(joc);
-            consola.setGames(jocuriCumparate);
-            consola.setStorageLeft(consola.getStorageLeft() - joc.getSize());
-            fin.close();
-            ofstream fout("../Shared/Files/consola.txt");
-            if (fout.is_open())
+            bool gasit = false;
+
+            for (auto i : jocuriCumparate)
             {
-                fout << consoleToString(consola);
+                if (i.getTitle() == joc.getTitle())
+                {
+                    gasit = true;
+                }
+            }
+            if (gasit == false)
+            {
+                jocuriCumparate.push_back(joc);
+                consola.setGames(jocuriCumparate);
+                fin.close();
+                ofstream fout("../Shared/Files/consola.txt");
+                if (fout.is_open())
+                {
+                    fout << consoleToString(consola);
+                    fout.close();
+                }
             }
         }
     }
 }
 
-void instalare_joc(char titlu_joc)
+void instalare_joc(char **argv)
 {
+    ifstream fin("../Shared/Files/consola.txt");
+    Console consola;
+    if (fin.is_open())
+    {
+        string reader;
+        getline(fin, reader);
+        consola = stringToConsole(reader);
+        fin.close();
+    }
+    vector<Game> jocuriCumparate = consola.getGames(), jocuriInstalate = consola.getGamesInstalled();
+    bool dejainstalat = false;
+    bool cumparat = false;
+    Game joc;
+    for (auto i : jocuriCumparate)
+    {
+        if (i.getTitle() == argv[2])
+        {
+            cumparat = true;
+            joc = i;
+            break;
+        }
+    }
+    if (cumparat == false)
+    {
+        return;
+    }
+    for (auto i : jocuriInstalate)
+    {
+        if (i.getTitle() == argv[2])
+        {
+            dejainstalat = true;
+            break;
+        }
+    }
+    if (dejainstalat == true)
+    {
+        return;
+    }
+    if (consola.getStorageLeft() - joc.getSize() >= 0)
+    {
+        jocuriInstalate.push_back(joc);
+        consola.setGamesInstalled(jocuriInstalate);
+        consola.setStorageLeft(consola.getStorageLeft() - joc.getSize());
+    }
+    ofstream fout("../Shared/Files/consola.txt");
+    if (fout.is_open())
+    {
+        fout << consoleToString(consola);
+        fout.close();
+    }
 }
 
-void dezinstalare_joc(char titlu_joc)
+void dezinstalare_joc(char **argv)
 {
+    ifstream fin("../Shared/Files/consola.txt");
+    Console consola;
+    if (fin.is_open())
+    {
+        string reader;
+        getline(fin, reader);
+        consola = stringToConsole(reader);
+        fin.close();
+    }
+    vector<Game> jocuriInstalate = consola.getGamesInstalled(), updateJocuriInstalate;
+    Game joc;
+    bool dezinstalat = false;
+    for (auto i : jocuriInstalate)
+    {
+        if (i.getTitle() == argv[2])
+        {
+            dezinstalat = true;
+            joc = i;
+        }
+        else
+        {
+            updateJocuriInstalate.push_back(i);
+        }
+    }
+    if (dezinstalat == true)
+    {
+        consola.setGamesInstalled(updateJocuriInstalate);
+        consola.setStorageLeft(consola.getStorageLeft() + joc.getSize());
+        ofstream fout("../Shared/Files/consola.txt");
+        if (fout.is_open())
+        {
+            fout << consoleToString(consola);
+            fout.close();
+        }
+    }
+}
+
+void cumpara_bundle(char **argv)
+{
+    ifstream finBundleuri("../Shared/Files/bundles.txt");
+    ifstream finConsola("../Shared/Files/consola.txt");
+    Console consola;
+    if (finConsola.is_open())
+    {
+        string reader;
+        getline(finConsola, reader);
+        consola = stringToConsole(reader);
+        finConsola.close();
+    }
+    Bundle bundle;
+    if (finBundleuri.is_open())
+    {
+        string cauta = findGameOrBundleInFile(argv[2], "bundles");
+        if (cauta != "-")
+        {
+            bundle = stringToBundle(cauta);
+        }
+        vector<Game> jocuriCumparateConsola = consola.getGames(), jocuriBundle = bundle.getGames();
+        set<Game> finalJocuriCumparate;
+        for (auto i : jocuriCumparateConsola)
+        {
+            finalJocuriCumparate.insert(i);
+        }
+        for (auto i : jocuriBundle)
+        {
+            finalJocuriCumparate.insert(i);
+        }
+        vector<Game> finalJocuriCumparateVector;
+        for (auto i : finalJocuriCumparate)
+        {
+            finalJocuriCumparateVector.push_back(i);
+        }
+        consola.setGames(finalJocuriCumparateVector);
+        finBundleuri.close();
+    }
+    ofstream fout("../Shared/Files/consola.txt");
+    if (fout.is_open())
+    {
+        fout << consoleToString(consola);
+        fout.close();
+    }
 }

@@ -1,4 +1,5 @@
 #include "clase.h"
+// 
 
 std::string findGameOrBundleInFile(std::string, std::string);
 
@@ -380,3 +381,4 @@ std::string consoleToString(Console c)
     }
     return consola;
 }
+
