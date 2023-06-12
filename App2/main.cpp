@@ -158,6 +158,13 @@ void cumpara_joc(char **argv)
     if (find != "-")
     {
         Game joc = stringToGame(find);
+        if(findGameOrBundleInFile((string)argv[2], "bought-games") == "-"){
+            ofstream fout("../Shared/Files/bought-games.txt", std::ios::app);
+            if(fout.is_open()){
+                fout << find << endl;
+                fout.close();
+            }
+        }
         ifstream fin("../Shared/Files/consola.txt");
         if (fin.is_open())
         {

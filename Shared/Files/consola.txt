@@ -1,1 +1,1 @@
-512.00;0;2;CS:GO;Puscaturi;15;120;Minecraft;Creative;15;5;
+512.00;0;1;Minecraft;Sandbox;23;12;
