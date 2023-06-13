@@ -20,12 +20,20 @@ int main(int argc, char **argv)
         {
             modifica_joc(argv);
         }
+        else
+        {
+            cout << "Comanda gresita!";
+        }
     }
     if (argc == 2)
     {
         if ((string)argv[1] == "show_catalog")
         {
             vizualizare_catalog();
+        }
+        else
+        {
+            cout << "Comanda gresita!";
         }
     }
     if (argc == 3)
@@ -34,17 +42,21 @@ int main(int argc, char **argv)
         {
             cumpara_joc(argv);
         }
-        if ((string)argv[1] == "install_game")
+        else if ((string)argv[1] == "install_game")
         {
             instalare_joc(argv);
         }
-        if ((string)argv[1] == "uninstall_game")
+        else if ((string)argv[1] == "uninstall_game")
         {
             dezinstalare_joc(argv);
         }
-        if ((string)argv[1] == "buy_bundle")
+        else if ((string)argv[1] == "buy_bundle")
         {
             cumpara_bundle(argv);
+        }
+        else
+        {
+            cout << "Comanda gresita!";
         }
     }
 
@@ -83,12 +95,16 @@ void vizualizare_catalog()
          << endl;
     for (auto i : categorii)
     {
-        cout << i << ":" << endl;
+        cout << i << ":" << endl
+             << endl;
         for (auto j : jocuri)
         {
             if (j.getCategory() == i)
             {
-                cout << j << endl;
+                cout << "Nume: " << j.getTitle() << endl;
+                cout << "Categorie: " << j.getCategory() << endl;
+                cout << "Pret: " << j.getPrice() << "$" << endl;
+                cout << "Dimensiune: " << j.getSize() << "GB" << endl;
             }
         }
         cout << endl;
@@ -98,7 +114,22 @@ void vizualizare_catalog()
          << endl;
     for (auto i : bundleuri)
     {
-        cout << i;
+        cout << "Titlu: " << i.getTitle() << endl;
+        cout << "Discount: " << i.getDiscount() << "%" << endl;
+        double discount = i.getDiscount();
+        cout << "Pret: " << i.getPrice() << "$" << endl;
+        vector<Game> g = i.getGames();
+        cout << endl
+             << "Jocuri: " << endl;
+        for (auto j : g)
+        {
+            cout << "Nume: " << j.getTitle() << endl;
+            cout << "Categorie: " << j.getCategory() << endl;
+            cout << "Pret: " << j.getPrice() << "$" << endl;
+            cout << "Dimensiune: " << j.getSize() << "GB" << endl
+                 << endl;
+        }
+        cout << endl;
     }
 }
 
@@ -147,8 +178,13 @@ void modifica_joc(char **argv)
             {
                 fout << bundleToString(i) << endl;
             }
+            fout.close();
+            cout << "Joc modificat cu succes!";
         }
-        fout.close();
+    }
+    else
+    {
+        cout << "Jocul nu exista";
     }
 }
 
@@ -158,9 +194,11 @@ void cumpara_joc(char **argv)
     if (find != "-")
     {
         Game joc = stringToGame(find);
-        if(findGameOrBundleInFile((string)argv[2], "bought-games") == "-"){
+        if (findGameOrBundleInFile((string)argv[2], "bought-games") == "-")
+        {
             ofstream fout("../Shared/Files/bought-games.txt", std::ios::app);
-            if(fout.is_open()){
+            if (fout.is_open())
+            {
                 fout << find << endl;
                 fout.close();
             }
@@ -191,9 +229,18 @@ void cumpara_joc(char **argv)
                 {
                     fout << consoleToString(consola);
                     fout.close();
+                    cout << "Joc cumparat cu succes!";
                 }
             }
+            else
+            {
+                cout << "Detii deja acest joc!";
+            }
         }
+    }
+    else
+    {
+        cout << "Jocul nu exista!";
     }
 }
 
@@ -235,6 +282,7 @@ void instalare_joc(char **argv)
     }
     if (dejainstalat == true)
     {
+        cout << "Jocul este deja instalat!";
         return;
     }
     if (consola.getStorageLeft() - joc.getSize() >= 0)
@@ -243,11 +291,17 @@ void instalare_joc(char **argv)
         consola.setGamesInstalled(jocuriInstalate);
         consola.setStorageLeft(consola.getStorageLeft() - joc.getSize());
     }
+    else
+    {
+        cout << "Spatiu insuficient pentru a instala acest joc!" << endl;
+        cout << "Spatiu disponibil: " << consola.getStorageLeft() << "GB";
+    }
     ofstream fout("../Shared/Files/consola.txt");
     if (fout.is_open())
     {
         fout << consoleToString(consola);
         fout.close();
+        cout << "Joc instalat cu succes!";
     }
 }
 
@@ -286,7 +340,12 @@ void dezinstalare_joc(char **argv)
         {
             fout << consoleToString(consola);
             fout.close();
+            cout << "Joc dezinstalat cu succes!";
         }
+    }
+    else
+    {
+        cout << "Jocul nu este instalat!";
     }
 }
 
@@ -309,6 +368,11 @@ void cumpara_bundle(char **argv)
         if (cauta != "-")
         {
             bundle = stringToBundle(cauta);
+        }
+        else
+        {
+            cout << "Bundle inexistent!";
+            return;
         }
         vector<Game> jocuriCumparateConsola = consola.getGames(), jocuriBundle = bundle.getGames();
         set<Game> finalJocuriCumparate;
@@ -333,5 +397,7 @@ void cumpara_bundle(char **argv)
     {
         fout << consoleToString(consola);
         fout.close();
+        cout << "Bundle cumparat cu succes!";
     }
 }
+
